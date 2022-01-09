@@ -1,6 +1,6 @@
 import os
+import time
 from tkinter import filedialog
-
 import numpy as np
 from PIL import Image
 from skimage import io
@@ -134,11 +134,7 @@ class FileMenager:
             self.read_file_to_temporary(i, thread_num)
             dim = np.squeeze(self.temporary_file[thread_num]).ndim
             if dim == 3:
-                brightness = np.full(3, 0.0).astype(float)
-                for x in range(len(self.temporary_file[thread_num])):
-                    for y in range(len(self.temporary_file[thread_num][x])):
-                        brightness += self.temporary_file[thread_num][x][y]
-
+                brightness = self.temporary_file[thread_num].sum(axis=0).sum(axis=0)
                 if check_r or check_w:
                     brightness[0] = brightness[0] / (self.temporary_file.shape[1] * self.temporary_file.shape[2])
                     brightness[0] = (brightness[0] / 256) * 100
@@ -176,9 +172,7 @@ class FileMenager:
             if dim == 2:
                 if check_w:
                     self.read_file_to_temporary(i, thread_num)
-                    for x in range(len(self.temporary_file[thread_num])):
-                        for y in range(len(self.temporary_file[thread_num][x])):
-                            brightness_w += self.temporary_file[thread_num][x][y]
+                    brightness_w = self.temporary_file[thread_num].sum()
                     brightness_w = brightness_w / (self.temporary_file.shape[1] * self.temporary_file.shape[2])
                     brightness_w = (brightness_w / 256) * 100
                     if min_w < brightness_w < max_w:

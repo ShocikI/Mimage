@@ -55,7 +55,7 @@ class GUI:
         weight_label = tk.Label(self.avarage_frame, text="Waga")
         self.entry_weigth = tk.Entry(self.avarage_frame, width=5)
         self.button_weigth = tk.Button(
-            self.avarage_frame, text="Nadaj wagę",
+            self.avarage_frame, text="Zmień wagę",
             command=self.set_weight
         )
         self.weight_file.grid(row=0, column=0, padx=5, pady=5, columnspan=3)
@@ -140,6 +140,27 @@ class GUI:
 
     def avarage_thread_fun(self, foldername, button1, button2, button3, button4, button5, button6, button7):
         os.chdir(foldername)
+
+        self.a_error_str.set("Trwa walidacja plików.\n"
+                             "To może potrwać kilka minut.")
+        time.sleep(1)
+        self.file_menager.read_file(0)
+        template = self.file_menager.readed_file
+
+        for file in range(len(self.file_menager.file_list)):
+            self.file_menager.read_file(file)
+            if (
+                    template.shape[0] != self.file_menager.readed_file.shape[0] or
+                    template.shape[1] != self.file_menager.readed_file.shape[1] or
+                    np.squeeze(template).ndim != np.squeeze(self.file_menager.readed_file).ndim
+            ):
+                self.a_error_str.set("Operacja niemożliwa, pliki mają różne rozdzielczości\n"
+                                     "bądź są zapisane w różnych systemach barw")
+                self.stop_progress(button1, button2, button3, button4, button5, button6, button7)
+                return
+        self.a_error_str.set("Walidacja zakończona pomyślnie.")
+        template = []
+
         if self.cores > len(self.file_menager.file_list):
             self.cores = len(self.file_menager.file_list)
 
@@ -198,9 +219,9 @@ class GUI:
                 self.file_menager.summary_file = self.file_menager.summary_file / weight_sum
 
             self.a_error_str.set("Obliczam jasność.")
-            for x in range(len(self.file_menager.summary_file)):
-                for y in range(len(self.file_menager.summary_file[x])):
-                    brightness += self.file_menager.summary_file[x][y]
+
+            brightness = self.file_menager.summary_file.sum(axis=0).sum(axis=0)
+
             brightness = brightness / (self.file_menager.summary_file.shape[0] * self.file_menager.summary_file.shape[1])
             brightness = (brightness / 256) * 100
             brightness_w = brightness.sum() / len(brightness)
