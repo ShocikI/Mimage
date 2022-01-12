@@ -1,5 +1,4 @@
 import os
-import time
 from tkinter import filedialog
 import numpy as np
 from PIL import Image
@@ -259,14 +258,17 @@ class FileMenager:
     def save_files(self):
         if len(self.file_list) == 0:
             return 1
-        foldername = filedialog.askdirectory(
-            title="Wybierz folder do zapisania plików"
-        ).replace("/", "\\")
-        if foldername == "":
+        try:
+            foldername = filedialog.askdirectory(
+                title="Wybierz folder do zapisania plików"
+            ).replace("/", "\\")
+            if foldername == "":
+                return 2
+        except:
             return 2
         os.chdir(foldername)
 
         for i in range(len(self.file_list)):
             self.read_file(i)
-            self.save_file(self.readed_file, str(self.file_list[i])[len(os.getcwd()) + 1:])
+            self.save_file(self.readed_file, str(os.path.split(self.file_list[i])[1]))
         return 0

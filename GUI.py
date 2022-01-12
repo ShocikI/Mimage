@@ -1,4 +1,3 @@
-import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -15,8 +14,8 @@ class GUI:
 
     cores = int(os.cpu_count() / 2)
     weight_file = []
-    entry_weigth = []
-    button_weigth = []
+    entry_weight = []
+    button_weight = []
     weight_is_used = False
 
     file_counter = tk.StringVar()
@@ -53,15 +52,15 @@ class GUI:
             width=50, justify="right"
         )
         weight_label = tk.Label(self.avarage_frame, text="Waga")
-        self.entry_weigth = tk.Entry(self.avarage_frame, width=5)
-        self.button_weigth = tk.Button(
+        self.entry_weight = tk.Entry(self.avarage_frame, width=5)
+        self.button_weight = tk.Button(
             self.avarage_frame, text="Zmień wagę",
             command=self.set_weight
         )
         self.weight_file.grid(row=0, column=0, padx=5, pady=5, columnspan=3)
         weight_label.grid(row=1, column=0, padx=5, pady=5, sticky="E")
-        self.entry_weigth.grid(row=1, column=1, padx=5, pady=5, sticky="W")
-        self.button_weigth.grid(row=1, column=2, padx=5, pady=5)
+        self.entry_weight.grid(row=1, column=1, padx=5, pady=5, sticky="W")
+        self.button_weight.grid(row=1, column=2, padx=5, pady=5)
 
     def start_progress(self, button1, button2, button3, button4, button5, button6, button7):
         self.progress_bar.start(20)
@@ -72,8 +71,8 @@ class GUI:
         button5.config(state="disabled")
         button6.config(state="disabled")
         button7.config(state="disabled")
-        if self.button_weigth:
-            self.button_weigth.config(state="disabled")
+        if self.button_weight:
+            self.button_weight.config(state="disabled")
 
     def stop_progress(self, button1, button2, button3, button4, button5, button6, button7):
         self.progress_bar.stop()
@@ -86,8 +85,8 @@ class GUI:
         button5.config(state="normal")
         button6.config(state="normal")
         button7.config(state="normal")
-        if self.button_weigth:
-            self.button_weigth.config(state="normal")
+        if self.button_weight:
+            self.button_weight.config(state="normal")
 
     def fill_file_list(self):
         val = self.file_menager.fill_file_list()
@@ -450,6 +449,7 @@ class GUI:
         self.image_height.set(str(self.file_menager.image_file.size[1]))
 
     def save_files(self):
+        self.s_error_str.set("")
         val = self.file_menager.save_files()
         if val == 1:
             self.s_error_str.set("Brak plików do zapisania.")
