@@ -142,7 +142,6 @@ class GUI:
 
         self.a_error_str.set("Trwa walidacja plików.\n"
                              "To może potrwać kilka minut.")
-        time.sleep(1)
         self.file_menager.read_file(0)
         template = self.file_menager.readed_file
 
@@ -196,7 +195,6 @@ class GUI:
 
         self.a_error_str.set("Łączę obrazy.")
 
-        brightness_w: float = 0.0
         dim = np.squeeze(self.file_menager.thread_data[0]).ndim
         if dim == 3:
             self.file_menager.summary_file = np.full((
@@ -210,7 +208,6 @@ class GUI:
 
             self.file_menager.thread_data = []
             self.file_menager.temporary_file = []
-            brightness = np.full(3, 0.0).astype(float)
 
             if not self.weight_is_used:
                 self.file_menager.summary_file = self.file_menager.summary_file / len(self.file_menager.file_list)
@@ -586,7 +583,7 @@ class GUI:
 
         weight = 0
         try:
-            weight = int(self.entry_weigth.get())
+            weight = int(self.entry_weight.get())
             if weight == 0:
                 self.a_error_str.set("Waga musi być liczbą naturalną.")
                 return
