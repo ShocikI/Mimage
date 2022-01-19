@@ -11,6 +11,7 @@ class GUI:
     file_menager = FileMenager()
     root = tk.Tk()
     root.title("Mimage")
+    buttons = []
 
     cores = int(os.cpu_count() / 2)
     weight_file = []
@@ -62,31 +63,19 @@ class GUI:
         self.entry_weight.grid(row=1, column=1, padx=5, pady=5, sticky="W")
         self.button_weight.grid(row=1, column=2, padx=5, pady=5)
 
-    def start_progress(self, button1, button2, button3, button4, button5, button6, button7, button8):
+    def start_progress(self):
         self.progress_bar.start(20)
-        button1.config(state="disabled")
-        button2.config(state="disabled")
-        button3.config(state="disabled")
-        button4.config(state="disabled")
-        button5.config(state="disabled")
-        button6.config(state="disabled")
-        button7.config(state="disabled")
-        button8.config(state="disabled")
+        for button in self.buttons:
+            button.config(state="disabled")
         if self.button_weight:
             self.button_weight.config(state="disabled")
 
-    def stop_progress(self, button1, button2, button3, button4, button5, button6, button7, button8):
+    def stop_progress(self):
         self.progress_bar.stop()
         self.cores = int(os.cpu_count() / 2)
         self.weight_is_used = False
-        button1.config(state="normal")
-        button2.config(state="normal")
-        button3.config(state="normal")
-        button4.config(state="normal")
-        button5.config(state="normal")
-        button6.config(state="normal")
-        button7.config(state="normal")
-        button8.config(state="normal")
+        for button in self.buttons:
+            button.config(state="normal")
         if self.button_weight:
             self.button_weight.config(state="normal")
 
@@ -114,7 +103,7 @@ class GUI:
         self.file_height.set(str(self.file_menager.readed_file.shape[0]))
         self.create_weight_option()
 
-    def avarage_file(self, button1, button2, button3, button4, button5, button6, button7, button8):
+    def avarage_file(self):
         self.a_error_str.set("")
 
         if len(self.file_menager.file_list) == 0:
@@ -128,18 +117,15 @@ class GUI:
             self.a_error_str.set("Nie wybrano folderu do zapisu")
             return
 
-        self.start_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+        self.start_progress()
 
         thread = Thread(
             target=self.avarage_thread_fun,
-            args=(
-                foldername, button1, button2, button3,
-                button4, button5, button6, button7, button8
-            )
+            args=(foldername)
         )
         thread.start()
 
-    def avarage_thread_fun(self, foldername, button1, button2, button3, button4, button5, button6, button7, button8):
+    def avarage_thread_fun(self, foldername):
         os.chdir(foldername)
 
         self.a_error_str.set("Trwa walidacja plików.\n"
@@ -156,7 +142,7 @@ class GUI:
             ):
                 self.a_error_str.set("Operacja niemożliwa, pliki mają różne rozdzielczości\n"
                                      "bądź są zapisane w różnych systemach barw")
-                self.stop_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+                self.stop_progress()
                 return
         self.a_error_str.set("Walidacja zakończona pomyślnie.\n"
                              "Trwa proces uśrednienia.")
@@ -267,13 +253,10 @@ class GUI:
         self.file_width.set(str(self.file_menager.readed_file.shape[1]))
         self.file_height.set(str(self.file_menager.readed_file.shape[0]))
         self.file_menager.open_image(self.file_menager.file_list[0])
-        self.stop_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+        self.stop_progress()
         self.create_weight_option()
 
-    def filter_fun(
-            self, min_w, max_w, min_r, max_r, min_g, max_g, min_b, max_b,
-            button1, button2, button3, button4, button5, button6, button7, button8
-    ):
+    def filter_fun(self, min_w, max_w, min_r, max_r, min_g, max_g, min_b, max_b):
         self.f_error_str.set("")
 
         full: int = 100
@@ -321,22 +304,15 @@ class GUI:
             self.f_error_str.set("Do ustalelnia minimum/maximum\nużyj liczb")
             return
 
-        self.start_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+        self.start_progress()
 
         thread = Thread(
             target=self.filter_thread_fun,
-            args=(
-                min_w, max_w, min_r, max_r, min_g, max_g, min_b, max_b,
-                button1, button2, button3, button4, button5, button6, button7, button8
-            )
+            args=(min_w, max_w, min_r, max_r, min_g, max_g, min_b, max_b)
         )
         thread.start()
 
-    def filter_thread_fun(
-            self, min_w, max_w, min_r, max_r, min_g, max_g, min_b,
-            max_b, button1, button2, button3, button4, button5, button6,
-            button7, button8
-    ):
+    def filter_thread_fun(self, min_w, max_w, min_r, max_r, min_g, max_g, min_b,max_b):
         if self.cores > len(self.file_menager.file_list):
             self.cores = len(self.file_menager.file_list)
 
@@ -370,12 +346,9 @@ class GUI:
         self.file_counter.set(str(len(self.file_menager.file_list)))
         self.create_weight_option()
 
-        self.stop_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+        self.stop_progress()
 
-    def threshold_fun(
-            self, bound_w: int, bound_r: int, bound_g: int, bound_b: int,
-            button1, button2, button3, button4, button5, button6, button7, button8
-    ):
+    def threshold_fun(self, bound_w: int, bound_r: int, bound_g: int, bound_b: int):
         self.t_error_str.set("")
         check_w = self.is_thres_w.get()
         check_r = self.is_thres_r.get()
@@ -397,25 +370,17 @@ class GUI:
             self.t_error_str.set("Nie wybrano folderu do zapisu.")
             return
 
-        self.start_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+        self.start_progress()
 
         thread = (
             Thread(
                 target=self.threshold_thread_fun,
-                args=(
-                    bound_w, bound_r, bound_g, bound_b,
-                    button1, button2, button3, button4, button5, button6, button7, button8,
-                    foldername
-                )
+                args=(bound_w, bound_r, bound_g, bound_b, foldername)
             )
         )
         thread.start()
 
-    def threshold_thread_fun(
-            self, bound_w: int, bound_r: int, bound_g: int, bound_b: int,
-            button1, button2, button3, button4, button5, button6, button7, button8,
-            foldername
-    ):
+    def threshold_thread_fun(self, bound_w: int, bound_r: int, bound_g: int, bound_b: int, foldername):
         os.chdir(foldername)
         check_w = self.is_thres_w.get()
         check_r = self.is_thres_r.get()
@@ -448,7 +413,7 @@ class GUI:
 
         self.t_error_str.set("Sprogowano pomyślnie.")
         self.file_menager.open_image("threshold_" + str(len(self.file_menager.file_list) - 1) + ".tif")
-        self.stop_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+        self.stop_progress()
 
     def get_image_file(self):
         self.file_menager.get_image_file()
@@ -465,10 +430,7 @@ class GUI:
         elif val == 0:
             self.s_error_str.set("Pomyślnie zapisano pliki.")
 
-    def tack_image_on(
-            self, entry_x, entry_y,
-            button1, button2, button3, button4, button5, button6, button7, button8
-    ):
+    def tack_image_on(self, entry_x, entry_y,):
         self.i_error_str.set("")
         try:
             entry_x = int(entry_x)
@@ -499,22 +461,15 @@ class GUI:
             self.i_error_str.set("Nie wybrano folderu do zapisu.")
             return
 
-        self.start_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+        self.start_progress()
 
         thread = Thread(
             target=self.tack_on_thread_fun,
-            args=(entry_x, entry_y, foldername,
-                  button1, button2, button3, button4,
-                  button5, button6, button7, button8
-                  )
+            args=(entry_x, entry_y, foldername)
         )
         thread.start()
 
-    def tack_on_thread_fun(
-            self, entry_x, entry_y, foldername,
-            button1, button2, button3, button4,
-            button5, button6, button7, button8
-    ):
+    def tack_on_thread_fun(self, entry_x, entry_y, foldername):
         if self.cores > len(self.file_menager.file_list):
             self.cores = len(self.file_menager.file_list)
 
@@ -541,7 +496,7 @@ class GUI:
 
         self.i_error_str.set("Pomyślnie zapisano pliki")
         self.file_menager.open_image("tack_on_" + str(len(self.file_menager.file_list) - 1) + ".tif")
-        self.stop_progress(button1, button2, button3, button4, button5, button6, button7, button8)
+        self.stop_progress()
 
     def define_intervals(self):
         forlist = np.arange(1, self.cores)
@@ -618,12 +573,10 @@ class GUI:
 
     def __init__(self):
         button_frame = tk.LabelFrame(self.root, text="Wybór plików")
-        file_button = tk.Button(
-            button_frame, text="Wybierz plik", command=self.fill_file_list
-        )
-        folder_button = tk.Button(
-            button_frame, text="Wybierz folder", command=self.fill_list_from_folder
-        )
+        file_button = tk.Button(button_frame, text="Wybierz plik", command=self.fill_file_list)
+        self.buttons.append(file_button)
+        folder_button = tk.Button(button_frame, text="Wybierz folder", command=self.fill_list_from_folder)
+        self.buttons.append(folder_button)
         files_count = tk.Label(button_frame, textvariable=self.file_counter)
 
         filtering = tk.LabelFrame(self.root, text="Filtrowanie")
@@ -664,11 +617,10 @@ class GUI:
             filtering, text="Filtruj",
             command=lambda: self.filter_fun(
                 min_w.get(), max_w.get(), min_r.get(), max_r.get(),
-                min_g.get(), max_g.get(), min_b.get(), max_b.get(),
-                file_button, folder_button, filter_button, thres_button,
-                avarage_button, tack_on_button, save_button, image_button
+                min_g.get(), max_g.get(), min_b.get(), max_b.get()
             )
         )
+        self.buttons.append(file_button)
 
         scale_length = 200
         threshold = tk.LabelFrame(self.root, text="Progowanie")
@@ -707,20 +659,14 @@ class GUI:
         thres_error = tk.Label(threshold, textvariable=self.t_error_str)
         thres_button = tk.Button(
             threshold, text="Proguj",
-            command=lambda: self.threshold_fun(
-                bound_white.get(), bound_red.get(),
-                bound_green.get(), bound_blue.get(),
-                file_button, folder_button, filter_button, thres_button,
-                avarage_button, tack_on_button, save_button, image_button
-            )
+            command=lambda: self.threshold_fun(bound_white.get(), bound_red.get(), bound_green.get(), bound_blue.get())
         )
+        self.buttons.append(thres_button)
 
         save_frame = tk.LabelFrame(self.root, text="Zapisz pliki")
         save_error = tk.Label(save_frame, textvariable=self.s_error_str)
-        save_button = tk.Button(
-            save_frame, text="Zapisz",
-            command=self.save_files
-        )
+        save_button = tk.Button(save_frame, text="Zapisz", command=self.save_files)
+        self.buttons.append(save_button)
 
         image_frame = tk.LabelFrame(self.root, text="Dodaj obraz")
         file_width = tk.Label(image_frame, textvariable=self.file_width)
@@ -734,28 +680,21 @@ class GUI:
         radio_left = tk.Radiobutton(image_frame, variable=self.is_right, value=False, text="lewej")
         entry_y_pos = tk.Entry(image_frame, width=5)
         image_label = tk.Label(image_frame, textvariable=self.i_error_str)
-        image_button = tk.Button(
-            image_frame, text="Wybierz obraz",
-            command=self.get_image_file
-        )
+        image_button = tk.Button(image_frame, text="Wybierz obraz",command=self.get_image_file)
+        self.buttons.append(image_button)
         tack_on_button = tk.Button(
             image_frame, text="Doklej",
-            command=lambda: self.tack_image_on(
-                entry_x_pos.get(), entry_y_pos.get(),
-                file_button, folder_button, filter_button, thres_button,
-                avarage_button, tack_on_button, save_button, image_button
-            )
+            command=lambda: self.tack_image_on(entry_x_pos.get(), entry_y_pos.get())
         )
+        self.buttons.append(tack_on_button)
 
         # avarage_frame
         avarage_error = tk.Label(self.avarage_frame, textvariable=self.a_error_str)
         avarage_button = tk.Button(
             self.avarage_frame, text="Uśrednij",
-            command=lambda: self.avarage_file(
-                file_button, folder_button, filter_button, thres_button,
-                avarage_button, tack_on_button, save_button, image_button
-            )
+            command=self.avarage_file
         )
+        self.buttons.append(avarage_button)
 
         # Grid
         button_frame.grid(row=0, column=0, rowspan=4, padx=5, pady=5, sticky="N")
