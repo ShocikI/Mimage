@@ -86,16 +86,9 @@ class FileMenager:
         else:
             interval = [start]
 
-        self.read_file(0)
-        dim = np.squeeze(self.readed_file).ndim
-        if dim == 3:
-            for f in interval:
-                self.read_file_to_temporary(f, thread_num)
-                self.thread_data[thread_num] += self.temporary_file[thread_num]
-        if dim == 2:
-            for f in interval:
-                self.read_file_to_temporary(f, thread_num)
-                self.thread_data[thread_num] += self.temporary_file[thread_num]
+        for f in interval:
+            self.read_file_to_temporary(f, thread_num)
+            self.thread_data[thread_num] += self.temporary_file[thread_num]
 
     def avarage_weight_file(self, thread_num, start, stop):
         if start < stop:
@@ -103,16 +96,9 @@ class FileMenager:
         else:
             interval = [start]
 
-        self.read_file(0)
-        dim = np.squeeze(self.readed_file).ndim
-        if dim == 3:
-            for f in interval:
-                self.read_file_by_path(self.avarage_data[f][0], thread_num)
-                self.thread_data[thread_num] += (self.temporary_file[thread_num] * self.avarage_data[f][1])
-        elif dim == 2:
-            for f in interval:
-                self.read_file_by_path(self.avarage_data[f][0], thread_num)
-                self.thread_data[thread_num] += (self.temporary_file[thread_num] * self.avarage_data[f][1])
+        for f in interval:
+            self.read_file_by_path(self.avarage_data[f][0], thread_num)
+            self.thread_data[thread_num] += (self.temporary_file[thread_num] * self.avarage_data[f][1])
 
     def filter(
             self, check_w, check_r, check_g, check_b,
@@ -233,10 +219,10 @@ class FileMenager:
             interval = np.arange(start, stop+1)
         else:
             interval = [start]
-
+        print(self.image_file)
         for f in interval:
             temporary_file = Image.open(self.file_list[f])
-            if is_right:
+            if not is_right:
                 pos_x = entry_x
             else:
                 pos_x = temporary_file.size[0] - (entry_x + self.image_file.size[0])
@@ -245,8 +231,16 @@ class FileMenager:
             else:
                 pos_y = temporary_file.size[1] - (entry_y + self.image_file.size[1])
 
-            temporary_file.paste(self.image_file, (pos_x, pos_y), self.image_file)
-            temporary_file.save("tack_on_" + str(f) + ".tif")
+            if (self.image_file.size[0] + pos_x <= temporary_file.size[0] or
+                self.image_file.size[1] + pos_y <= temporary_file.size[1]):
+                if self.image_file.mode == 'RGBA':
+                    temporary_file.paste(self.image_file, (pos_x, pos_y), self.image_file)
+                    temporary_file.save("tack_on_" + str(f) + ".tif")
+                else:
+                    temporary_file.paste(self.image_file, (pos_x, pos_y))
+                    temporary_file.save("tack_on_" + str(f) + ".tif")
+            else:
+                pass
         return 0
 
     # Save function
