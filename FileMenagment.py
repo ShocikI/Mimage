@@ -13,7 +13,7 @@ class FileMenager:
     summary_file = []
     thread_data = []
     temporary_file = []
-    avarage_data = []
+    average_data = []
 
     def fill_file_list(self):
         try:
@@ -80,7 +80,7 @@ class FileMenager:
         os.startfile(file)
 
     # Generate functions
-    def avarage_file(self, thread_num, start, stop):
+    def average_file(self, thread_num, start, stop):
         if start < stop:
             interval = np.arange(start, stop+1)
         else:
@@ -90,15 +90,15 @@ class FileMenager:
             self.read_file_to_temporary(f, thread_num)
             self.thread_data[thread_num] += self.temporary_file[thread_num]
 
-    def avarage_weight_file(self, thread_num, start, stop):
+    def average_weight_file(self, thread_num, start, stop):
         if start < stop:
             interval = np.arange(start, stop+1)
         else:
             interval = [start]
 
         for f in interval:
-            self.read_file_by_path(self.avarage_data[f][0], thread_num)
-            self.thread_data[thread_num] += (self.temporary_file[thread_num] * self.avarage_data[f][1])
+            self.read_file_by_path(self.average_data[f][0], thread_num)
+            self.thread_data[thread_num] += (self.temporary_file[thread_num] * self.average_data[f][1])
 
     def filter(
             self, check_w, check_r, check_g, check_b,

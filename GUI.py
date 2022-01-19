@@ -41,7 +41,7 @@ class GUI:
     filter_by_green = tk.BooleanVar()
     filter_by_blue = tk.BooleanVar()
 
-    avarage_frame = tk.LabelFrame(root, text="Uśrednianie")
+    average_frame = tk.LabelFrame(root, text="Uśrednianie")
 
     progress_bar = ttk.Progressbar(
         root, orient="horizontal", length=800, mode="indeterminate"
@@ -49,13 +49,13 @@ class GUI:
 
     def create_weight_option(self):
         self.weight_file = ttk.Combobox(
-            self.avarage_frame, values=self.file_menager.file_list,
+            self.average_frame, values=self.file_menager.file_list,
             width=50, justify="right"
         )
-        weight_label = tk.Label(self.avarage_frame, text="Waga")
-        self.entry_weight = tk.Entry(self.avarage_frame, width=5)
+        weight_label = tk.Label(self.average_frame, text="Waga")
+        self.entry_weight = tk.Entry(self.average_frame, width=5)
         self.button_weight = tk.Button(
-            self.avarage_frame, text="Zmień wagę",
+            self.average_frame, text="Zmień wagę",
             command=self.set_weight
         )
         self.weight_file.grid(row=0, column=0, padx=5, pady=5, columnspan=3)
@@ -103,7 +103,7 @@ class GUI:
         self.file_height.set(str(self.file_menager.readed_file.shape[0]))
         self.create_weight_option()
 
-    def avarage_file(self):
+    def average_file(self):
         self.a_error_str.set("")
 
         if len(self.file_menager.file_list) == 0:
@@ -120,12 +120,12 @@ class GUI:
         self.start_progress()
 
         thread = Thread(
-            target=self.avarage_thread_fun,
+            target=self.average_thread_fun,
             args=(foldername)
         )
         thread.start()
 
-    def avarage_thread_fun(self, foldername):
+    def average_thread_fun(self, foldername):
         os.chdir(foldername)
 
         self.a_error_str.set("Trwa walidacja plików.\n"
@@ -160,7 +160,7 @@ class GUI:
             for i in range(self.cores):
                 threads.append(
                     Thread(
-                        target=self.file_menager.avarage_file,
+                        target=self.file_menager.average_file,
                         args=(i, intervals[i][0], intervals[i][1])
                     )
                 )
@@ -169,15 +169,15 @@ class GUI:
             for i in range(self.cores):
                 threads.append(
                     Thread(
-                        target=self.file_menager.avarage_weight_file,
+                        target=self.file_menager.average_weight_file,
                         args=(i, intervals[i][0], intervals[i][1])
                     )
                 )
                 threads[i].start()
 
             weight_sum = 0
-            for i in range(len(self.file_menager.avarage_data)):
-                weight_sum += self.file_menager.avarage_data[i][1]
+            for i in range(len(self.file_menager.average_data)):
+                weight_sum += self.file_menager.average_data[i][1]
 
         for i in range(self.cores):
             threads[i].join()
@@ -543,10 +543,10 @@ class GUI:
         self.file_menager.brightness_w = 0
 
     def set_weight_data(self):
-        self.file_menager.avarage_data = np.empty((len(self.file_menager.file_list), 2), dtype="object")
+        self.file_menager.average_data = np.empty((len(self.file_menager.file_list), 2), dtype="object")
         for f in range(len(self.file_menager.file_list)):
-            self.file_menager.avarage_data[f][0] = self.file_menager.file_list[f]
-            self.file_menager.avarage_data[f][1] = 1
+            self.file_menager.average_data[f][0] = self.file_menager.file_list[f]
+            self.file_menager.average_data[f][1] = 1
 
     def set_weight(self):
         self.a_error_str.set("")
@@ -565,9 +565,9 @@ class GUI:
             self.set_weight_data()
             self.weight_is_used = True
 
-        for f in range(len(self.file_menager.avarage_data)):
-            if self.file_menager.avarage_data[f][0] == self.weight_file.get():
-                self.file_menager.avarage_data[f][1] = weight
+        for f in range(len(self.file_menager.average_data)):
+            if self.file_menager.average_data[f][0] == self.weight_file.get():
+                self.file_menager.average_data[f][1] = weight
 
     # Layout
 
@@ -688,13 +688,13 @@ class GUI:
         )
         self.buttons.append(tack_on_button)
 
-        # avarage_frame
-        avarage_error = tk.Label(self.avarage_frame, textvariable=self.a_error_str)
-        avarage_button = tk.Button(
-            self.avarage_frame, text="Uśrednij",
-            command=self.avarage_file
+        # average_frame
+        average_error = tk.Label(self.average_frame, textvariable=self.a_error_str)
+        average_button = tk.Button(
+            self.average_frame, text="Uśrednij",
+            command=self.average_file
         )
-        self.buttons.append(avarage_button)
+        self.buttons.append(average_button)
 
         # Grid
         button_frame.grid(row=0, column=0, rowspan=4, padx=5, pady=5, sticky="N")
@@ -777,9 +777,9 @@ class GUI:
         image_button.grid(row=6, column=4, padx=5, pady=5, columnspan=3)
         tack_on_button.grid(row=7, column=0, padx=5, pady=5, columnspan=9)
 
-        self.avarage_frame.grid(row=8, column=1, padx=5, pady=5, columnspan=2, rowspan=4)
-        avarage_error.grid(row=2, column=0, padx=20, pady=5, columnspan=3)
-        avarage_button.grid(row=3, column=0, padx=50, pady=10, columnspan=3)
+        self.average_frame.grid(row=8, column=1, padx=5, pady=5, columnspan=2, rowspan=4)
+        average_error.grid(row=2, column=0, padx=20, pady=5, columnspan=3)
+        average_button.grid(row=3, column=0, padx=50, pady=10, columnspan=3)
 
         self.progress_bar.grid(row=25, column=0, columnspan=3, pady=5, padx=5)
 
