@@ -5,6 +5,7 @@ from FileMenagment import FileMenager
 from threading import Thread
 import os
 import numpy as np
+import time
 
 
 class GUI:
@@ -121,7 +122,7 @@ class GUI:
 
         thread = Thread(
             target=self.average_thread_fun,
-            args=(foldername)
+            args=(foldername,)
         )
         thread.start()
 
@@ -315,7 +316,7 @@ class GUI:
     def filter_thread_fun(self, min_w, max_w, min_r, max_r, min_g, max_g, min_b,max_b):
         if self.cores > len(self.file_menager.file_list):
             self.cores = len(self.file_menager.file_list)
-
+        self.file_menager.filtered_file_list = []
         intervals = self.define_intervals()
 
         threads = []
@@ -375,7 +376,7 @@ class GUI:
         thread = (
             Thread(
                 target=self.threshold_thread_fun,
-                args=(bound_w, bound_r, bound_g, bound_b, foldername)
+                args=(bound_w, bound_r, bound_g, bound_b, foldername,)
             )
         )
         thread.start()
@@ -465,7 +466,7 @@ class GUI:
 
         thread = Thread(
             target=self.tack_on_thread_fun,
-            args=(entry_x, entry_y, foldername)
+            args=(entry_x, entry_y, foldername,)
         )
         thread.start()
 

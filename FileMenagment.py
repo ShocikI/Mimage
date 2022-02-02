@@ -219,7 +219,6 @@ class FileMenager:
             interval = np.arange(start, stop+1)
         else:
             interval = [start]
-        print(self.image_file)
         for f in interval:
             temporary_file = Image.open(self.file_list[f])
             if not is_right:
